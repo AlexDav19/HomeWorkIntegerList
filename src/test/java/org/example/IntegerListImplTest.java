@@ -5,10 +5,13 @@ import org.example.exceptions.ValidationItemNullException;
 import org.example.exceptions.ValidationSizeException;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import java.lang.reflect.*;
+
 class IntegerListImplTest {
 
     final int LENGTH = 100_000;
@@ -32,7 +35,7 @@ class IntegerListImplTest {
 
     @Test
     void addTest_Exception() {
-        assertThrows(ValidationSizeException.class, () -> NULL_LIST.add(CORRECTED_STRING));
+        //assertThrows(ValidationSizeException.class, () -> NULL_LIST.add(CORRECTED_STRING));
         assertThrows(ValidationItemNullException.class, () -> CORRECTED_LIST.add(NULL_STRING));
     }
 
@@ -48,7 +51,7 @@ class IntegerListImplTest {
 
     @Test
     void addTest_withIndex_Exception() {
-        assertThrows(ValidationSizeException.class, () -> NULL_LIST.add(CORRECTED_INDEX, CORRECTED_STRING));
+        //assertThrows(ValidationSizeException.class, () -> NULL_LIST.add(CORRECTED_INDEX, CORRECTED_STRING));
         assertThrows(ValidationItemNullException.class, () -> CORRECTED_LIST.add(CORRECTED_INDEX, NULL_STRING));
     }
 
@@ -64,7 +67,7 @@ class IntegerListImplTest {
 
     @Test
     void set_Exception() {
-        assertThrows(ValidationSizeException.class, () -> NULL_LIST.set(CORRECTED_INDEX, CORRECTED_STRING));
+        //assertThrows(ValidationSizeException.class, () -> NULL_LIST.set(CORRECTED_INDEX, CORRECTED_STRING));
         assertThrows(ValidationItemNullException.class, () -> CORRECTED_LIST.set(CORRECTED_INDEX, NULL_STRING));
 
     }
@@ -213,6 +216,7 @@ class IntegerListImplTest {
         assertTrue(CORRECTED_LIST.equals(OTHER_LIST));
 
     }
+
     @Test
     void testEquals_false() {
         CORRECTED_LIST.add(1);
@@ -232,7 +236,7 @@ class IntegerListImplTest {
         CORRECTED_LIST.add(2);
         CORRECTED_LIST.add(3);
 
-        assertEquals(3,CORRECTED_LIST.size());
+        assertEquals(3, CORRECTED_LIST.size());
     }
 
     @Test
@@ -243,6 +247,7 @@ class IntegerListImplTest {
 
         assertFalse(CORRECTED_LIST.isEmpty());
     }
+
     @Test
     void isEmpty_true() {
         assertTrue(CORRECTED_LIST.isEmpty());
@@ -275,13 +280,14 @@ class IntegerListImplTest {
     }
 
     @Test
-    void addNewPlace_success() {
-        CORRECTED_LIST.add(1);
-        CORRECTED_LIST.add(2);
-        CORRECTED_LIST.add(3);
-        final IntegerListImpl NEW_LIST;
-        Integer[] expectedArr = {1, 2, 3, null, null, null, null, null, null, null};
-        NEW_LIST = CORRECTED_LIST.addNewPlace(10);
+    void grow_success() {
+        IntegerListImpl NEW_LIST = new IntegerListImpl(4);
+        NEW_LIST.add(1);
+        NEW_LIST.add(2);
+        NEW_LIST.add(3);
+        NEW_LIST.add(4);
+        Integer[] expectedArr = {1, 2, 3, 4, null, null};
+        NEW_LIST = NEW_LIST.grow();
         assertArrayEquals(expectedArr, NEW_LIST.arr);
     }
 
@@ -319,6 +325,18 @@ class IntegerListImplTest {
         System.out.println("Insertion sort: ");
         long start = System.currentTimeMillis();
         CORRECTED_LIST.sortInsertion(CORRECTED_LIST.arr);
+        System.out.println(System.currentTimeMillis() - start);
+    }
+
+    @Test
+    void quickSortTest() {
+        Random random = new Random();
+        for (int i = 0; i < LENGTH; i++) {
+            CORRECTED_LIST.add(random.nextInt(100));
+        }
+        System.out.println("quick sort: ");
+        long start = System.currentTimeMillis();
+        CORRECTED_LIST.quickSort(CORRECTED_LIST.arr, 0, LENGTH - 1);
         System.out.println(System.currentTimeMillis() - start);
     }
 }

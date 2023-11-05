@@ -2,7 +2,6 @@ package org.example;
 
 import org.example.exceptions.ValidationIndexException;
 import org.example.exceptions.ValidationItemNullException;
-import org.example.exceptions.ValidationSizeException;
 
 import java.util.Objects;
 
@@ -16,7 +15,9 @@ public class IntegerListImpl implements IntegerList {
 
     @Override
     public Integer add(Integer item) {
-        validationSize();
+        if (validationSize()) {
+            grow();
+        }
         validationItemNull(item);
         arr[size] = item;
         size++;
@@ -25,7 +26,9 @@ public class IntegerListImpl implements IntegerList {
 
     @Override
     public Integer add(int index, Integer item) {
-        validationSize();
+        if (validationSize()) {
+            grow();
+        }
         validationItemNull(item);
         if (index >= size) {
             arr[size] = item;
@@ -41,7 +44,9 @@ public class IntegerListImpl implements IntegerList {
 
     @Override
     public Integer set(int index, Integer item) {
-        validationSize();
+        if (validationSize()) {
+            grow();
+        }
         validationItemNull(item);
         if (index >= size) {
             arr[size] = item;
@@ -89,6 +94,7 @@ public class IntegerListImpl implements IntegerList {
         }
         return false;
     }
+
     public boolean containsSort(Integer[] arr, Integer item) {
         sortSelection(arr);
         int min = 0;
@@ -176,17 +182,16 @@ public class IntegerListImpl implements IntegerList {
     }
 
     //Увеличить количество ячеек
-    public IntegerListImpl addNewPlace(int newLength) {
-        IntegerListImpl newArr = new IntegerListImpl(newLength);
-        System.arraycopy(arr, 0, newArr.arr, 0, 3);
+    public IntegerListImpl grow() {
+        IntegerListImpl newArr = new IntegerListImpl((int) (arr.length * 1.5));
+        System.arraycopy(arr, 0, newArr.arr, 0, arr.length);
 
         return newArr;
     }
 
-    public void validationSize() {
-        if (size >= arr.length) {
-            throw new ValidationSizeException("В массиве больше нет места");
-        }
+    public boolean validationSize() {
+        return size >= arr.length;
+        //throw new ValidationSizeException("В массиве больше нет места");
     }
 
     public void validationIndex(int index) {
@@ -222,6 +227,7 @@ public class IntegerListImpl implements IntegerList {
     }
 
     private void sortSelection(Integer[] arr) {
+
         for (int i = 0; i < size - 1; i++) {
             int minElementIndex = i;
             for (int j = i + 1; j < size; j++) {
@@ -231,6 +237,30 @@ public class IntegerListImpl implements IntegerList {
             }
             swapElements(arr, i, minElementIndex);
         }
+    }
+
+    public static void quickSort(Integer[] arr, int begin, int end) {
+        if (begin < end) {
+            int partitionIndex = partition(arr, begin, end);
+
+            quickSort(arr, begin, partitionIndex - 1);
+            quickSort(arr, partitionIndex + 1, end);
+        }
+    }
+
+    private static int partition(Integer[] arr, int begin, int end) {
+        int pivot = arr[end];
+        int i = (begin - 1);
+
+        for (int j = begin; j < end; j++) {
+            if (arr[j] <= pivot) {
+                i++;
+
+                swapElements(arr, i, j);
+            }
+        }
+        swapElements(arr, i + 1, end);
+        return i + 1;
     }
 
     public void sortInsertion(Integer[] arr) {
